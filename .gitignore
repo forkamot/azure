@@ -20,7 +20,6 @@ vars.tf
 host.yml
 .idea# Default ignored files
 .idea# Created by venv; see https://docs.python.org/3/library/venv.html
-*
 # Node artifact files
 node_modules/
 dist/
