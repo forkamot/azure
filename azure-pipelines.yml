@@ -1,15 +1,44 @@
 # documentation https://aka.ms/yaml
-
 trigger:
-- main
+  branches:
+    include:
+      - dev
+      - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+stages:
+  - stage: Test
+    displayName: "Run tests"
+    jobs:
+      - job: test_job
+        steps:
+          - checkout: self
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-  displayName: 'Run a multi-line script'
+          - script: |
+              echo run tests
+            displayName: "Run tests step"
+
+  - stage: DeployDev
+    displayName: "Deploy to DEV"
+    dependsOn: Test
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/dev')
+
+    jobs:
+      - job: deploy_dev_job
+        steps:
+          - script: |
+              echo deploy to dev
+            displayName: "Deploy DEV"
+
+  - stage: DeployProd
+    displayName: "Deploy to PROD"
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+
+    jobs:
+      - job: deploy_prod_job
+        steps:
+          - script: |
+              echo deploy to prod
+            displayName: "Deploy PROD"
